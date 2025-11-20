@@ -1,0 +1,1429 @@
+{
+	"info": {
+		"_postman_id": "shams-vision-api-collection-v2",
+		"name": "Shams Vision API Collection - Complete",
+		"description": "Complete API collection for Shams Vision backend application with all endpoints including authentication, user management, work sessions, leaves, districts, store visits, rewards, penalties, and notifications.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "shams-vision"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email_or_work_id\": \"admin@example.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login", ""]
+						},
+						"description": "Authenticate user and get JWT tokens. Use email or work_id."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/profile/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "profile", ""]
+						},
+						"description": "Get current authenticated user's profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"phone_number\": \"+1234567890\",\n    \"has_gps_permission\": true,\n    \"has_camera_permission\": true,\n    \"push_notifications_enabled\": true,\n    \"route_reminders_enabled\": true,\n    \"reward_alerts_enabled\": true,\n    \"qc_alerts_enabled\": true,\n    \"preferred_language\": \"en\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/profile/update/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "profile", "update", ""]
+						},
+						"description": "Update current user's profile including notification preferences"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "JWT Token Management",
+			"item": [
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/token/refresh/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "token", "refresh", ""]
+						},
+						"description": "Refresh access token using refresh token"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"{{access_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/token/verify/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "token", "verify", ""]
+						},
+						"description": "Verify if access token is valid"
+					},
+					"response": []
+				},
+				{
+					"name": "Blacklist Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/token/blacklist/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "token", "blacklist", ""]
+						},
+						"description": "Blacklist refresh token (logout)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Management (Admin Only)",
+			"item": [
+				{
+					"name": "List Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/users/?page=1&page_size=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "users", ""],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page_size",
+									"value": "10"
+								}
+							]
+						},
+						"description": "List all users with pagination (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"work_id\": \"FA001\",\n    \"email\": \"fieldagent@example.com\",\n    \"password\": \"password123\",\n    \"password_confirm\": \"password123\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"role\": \"FIELD_AGENT\",\n    \"phone_number\": \"+1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/users/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "users", ""]
+						},
+						"description": "Create a new user with any role (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/users/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "users", "1", ""]
+						},
+						"description": "Get user details by ID (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Updated Name\",\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/users/1/update/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "users", "1", "update", ""]
+						},
+						"description": "Update user details (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User (Soft Delete)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/users/1/delete/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "users", "1", "delete", ""]
+						},
+						"description": "Soft delete a user (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Delete Users",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_ids\": [1, 2, 3]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/users/bulk-delete/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "users", "bulk-delete", ""]
+						},
+						"description": "Bulk soft delete multiple users (Admin only)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Files",
+			"item": [
+				{
+					"name": "Upload File",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "purpose",
+									"value": "LEAVE_DOCUMENT",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Leave request document",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/files/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "files", ""]
+						},
+						"description": "Upload a file (supports S3 storage)"
+					},
+					"response": []
+				},
+				{
+					"name": "List Files",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/files/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "files", ""]
+						},
+						"description": "List all active files"
+					},
+					"response": []
+				},
+				{
+					"name": "Get File Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/files/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "files", "1", ""]
+						},
+						"description": "Get file details by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update File",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "description",
+									"value": "Updated description",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/files/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "files", "1", ""]
+						},
+						"description": "Update file metadata"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete File",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/files/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "files", "1", ""]
+						},
+						"description": "Soft delete a file"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Leaves",
+			"item": [
+				{
+					"name": "Create Leave Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"leave_type\": \"SICK\",\n    \"start_date\": \"2025-01-25\",\n    \"end_date\": \"2025-01-27\",\n    \"description\": \"Feeling unwell\",\n    \"document\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/leaves/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "leaves", ""]
+						},
+						"description": "Create a new leave request. Leave types: SICK, CASUAL"
+					},
+					"response": []
+				},
+				{
+					"name": "List Leave Requests",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/leaves/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "leaves", ""]
+						},
+						"description": "List leave requests (own requests for field agents, all for managers/admins)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Leave Request Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/leaves/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "leaves", "1", ""]
+						},
+						"description": "Get leave request details by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Leave Request Status (Manager/Admin)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"APPROVED\",\n    \"reviewer_note\": \"Approved for medical leave\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/leaves/1/status/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "leaves", "1", "status", ""]
+						},
+						"description": "Approve/reject/cancel leave request (Manager/Admin only). Status: APPROVED, REJECTED, CANCELLED"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Leave Request",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"CANCELLED\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/leaves/1/cancel/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "leaves", "1", "cancel", ""]
+						},
+						"description": "Cancel own leave request (only pending requests can be cancelled)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Work Sessions",
+			"item": [
+				{
+					"name": "Start Day (Check-in)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"latitude\": 24.7136,\n    \"longitude\": 46.6753\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/operations/sessions/start-day/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "sessions", "start-day", ""]
+						},
+						"description": "Start work day (check-in) for field agent. Tracks 9-hour shift."
+					},
+					"response": []
+				},
+				{
+					"name": "Take Break",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/operations/sessions/take-break/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "sessions", "take-break", ""]
+						},
+						"description": "Start a break. Route is optional. Tracks break time for 9-hour shift calculation."
+					},
+					"response": []
+				},
+				{
+					"name": "Resume Day",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/operations/sessions/resume-day/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "sessions", "resume-day", ""]
+						},
+						"description": "Resume work after break. Updates break duration and continues tracking work hours."
+					},
+					"response": []
+				},
+				{
+					"name": "Check Out",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"latitude\": 24.7136,\n    \"longitude\": 46.6753\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/operations/sessions/check-out/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "sessions", "check-out", ""]
+						},
+						"description": "Complete work day (check-out). Calculates total hours worked and break duration."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current Session",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/operations/sessions/current/?user_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "sessions", "current", ""],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "1",
+									"description": "Optional: For managers/admins to view other user's session"
+								}
+							]
+						},
+						"description": "Get current session with work hours, break duration, and remaining shift time. Includes all breaks."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Districts",
+			"item": [
+				{
+					"name": "List Districts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/operations/districts/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "districts", ""]
+						},
+						"description": "List all districts"
+					},
+					"response": []
+				},
+				{
+					"name": "Create District",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Riyadh Central\",\n    \"code\": \"RYD-CENT\",\n    \"priority\": \"HIGH\",\n    \"status\": \"ACTIVE\",\n    \"description\": \"Central district of Riyadh\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/operations/districts/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "districts", ""]
+						},
+						"description": "Create a new district (Manager/Admin only). Priority: HIGH, MEDIUM, LOW (or 1, 2, 3)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get District Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/operations/districts/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "districts", "1", ""]
+						},
+						"description": "Get district details by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update District",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"priority\": \"MEDIUM\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/operations/districts/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "districts", "1", ""]
+						},
+						"description": "Update district (Manager/Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Stores in District",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/operations/districts/1/stores/?search=store",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "districts", "1", "stores", ""],
+							"query": [
+								{
+									"key": "search",
+									"value": "store",
+									"description": "Optional: Search stores by name or address"
+								}
+							]
+						},
+						"description": "Get all stores in a district"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Today's District Stats",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/operations/districts/today-stats/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "districts", "today-stats", ""]
+						},
+						"description": "Get today's districts with statistics (stores assigned, visited, pending, progress)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Store Visits",
+			"item": [
+				{
+					"name": "Create Store Visit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"route\": 1,\n    \"store\": 1,\n    \"entry_time\": \"2025-01-20T09:00:00Z\",\n    \"entry_latitude\": 24.7136,\n    \"entry_longitude\": 46.6753\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/operations/store-visits/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "store-visits", ""]
+						},
+						"description": "Create a new store visit"
+					},
+					"response": []
+				},
+				{
+					"name": "List Store Visits",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/operations/store-visits/?user_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "store-visits", ""],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "1",
+									"description": "Optional: For managers/admins to filter by user"
+								}
+							]
+						},
+						"description": "List store visits (own visits for field agents, all for managers/admins)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Store Visit Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/operations/store-visits/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "store-visits", "1", ""]
+						},
+						"description": "Get store visit details by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Store Visit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/operations/store-visits/1/complete/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "store-visits", "1", "complete", ""]
+						},
+						"description": "Mark a store visit as completed"
+					},
+					"response": []
+				},
+				{
+					"name": "Skip Store Visit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/operations/store-visits/1/skip/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "store-visits", "1", "skip", ""]
+						},
+						"description": "Skip a store visit"
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Permission Form",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"permission_received\": true,\n    \"representative_name\": \"Ahmed Ali\",\n    \"representative_designation\": \"Store Manager\",\n    \"representative_contact\": \"+966501234567\",\n    \"signature_file\": 1,\n    \"permission_granted_confirmed\": true,\n    \"representative_details_verified\": true,\n    \"ready_to_begin_collection\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/operations/store-visits/1/submit-permission-form/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "store-visits", "1", "submit-permission-form", ""]
+						},
+						"description": "Submit permission form for a store visit"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Permission Form",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/operations/store-visits/1/permission-form/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "store-visits", "1", "permission-form", ""]
+						},
+						"description": "Get permission form for a store visit"
+					},
+					"response": []
+				},
+				{
+					"name": "Flag Store",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reason\": \"Store closed\",\n    \"additional_details\": \"Store was closed when I arrived\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/operations/store-visits/1/flag-store/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "store-visits", "1", "flag-store", ""]
+						},
+						"description": "Flag a store visit with a reason"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Flagged Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/operations/store-visits/1/flagged-details/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "operations", "store-visits", "1", "flagged-details", ""]
+						},
+						"description": "Get flagged store details for a store visit"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rewards & Points",
+			"item": [
+				{
+					"name": "List Rewards",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/finance/rewards/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "finance", "rewards", ""]
+						},
+						"description": "List all active rewards"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Reward",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Perfect Attendance\",\n    \"description\": \"Reward for perfect attendance\",\n    \"points_required\": 1000,\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/finance/rewards/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "finance", "rewards", ""]
+						},
+						"description": "Create a new reward (Manager/Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Points",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/finance/rewards/my-points/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "finance", "rewards", "my-points", ""]
+						},
+						"description": "Get current user's points balance and statistics (Field Agent only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rewards Activity",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/finance/rewards/activity/?period=this_month",
+							"host": ["{{base_url}}"],
+							"path": ["api", "finance", "rewards", "activity", ""],
+							"query": [
+								{
+									"key": "period",
+									"value": "this_month",
+									"description": "Period: this_month, previous_month, all_time"
+								}
+							]
+						},
+						"description": "Get rewards activity for current user (Field Agent only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rewards History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/finance/rewards/history/?period=this_month",
+							"host": ["{{base_url}}"],
+							"path": ["api", "finance", "rewards", "history", ""],
+							"query": [
+								{
+									"key": "period",
+									"value": "this_month",
+									"description": "Period: this_month, previous_month, all_time"
+								}
+							]
+						},
+						"description": "Get rewards history for current user (Field Agent only)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Penalties",
+			"item": [
+				{
+					"name": "List Penalties",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/administration/penalties/?period=this_month&user_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "administration", "penalties", ""],
+							"query": [
+								{
+									"key": "period",
+									"value": "this_month",
+									"description": "Period: this_month, previous_month, all_time"
+								},
+								{
+									"key": "user_id",
+									"value": "1",
+									"description": "Optional: Filter by user ID (for managers/admins)"
+								}
+							]
+						},
+						"description": "List penalties with summary (own penalties for field agents, all for managers/admins)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Penalty",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": 1,\n    \"amount\": 50.00,\n    \"reason\": \"Missed store visit\",\n    \"store\": 1,\n    \"route\": 1,\n    \"points_deducted\": 10\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/administration/penalties/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "administration", "penalties", ""]
+						},
+						"description": "Create a new penalty (Manager/Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Penalty Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/administration/penalties/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "administration", "penalties", "1", ""]
+						},
+						"description": "Get penalty details by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Penalties Summary",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/administration/penalties/summary/?period=this_month&user_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "administration", "penalties", "summary", ""],
+							"query": [
+								{
+									"key": "period",
+									"value": "this_month",
+									"description": "Period: this_month, previous_month, all_time"
+								},
+								{
+									"key": "user_id",
+									"value": "1",
+									"description": "Optional: Filter by user ID"
+								}
+							]
+						},
+						"description": "Get penalties summary with totals and period filtering"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Notifications",
+			"item": [
+				{
+					"name": "List Notifications",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/?is_read=false&type=LEAVE",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", ""],
+							"query": [
+								{
+									"key": "is_read",
+									"value": "false",
+									"description": "Optional: Filter by read status (true/false)"
+								},
+								{
+									"key": "type",
+									"value": "LEAVE",
+									"description": "Optional: Filter by notification type (LEAVE, ROUTE, PENALTY, REWARD, POINTS, STORE_VISIT, QUALITY_CHECK)"
+								}
+							]
+						},
+						"description": "List all notifications for current user (paginated)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Notification Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "1", ""]
+						},
+						"description": "Get notification details by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Notification as Read",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/1/mark_read/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "1", "mark_read", ""]
+						},
+						"description": "Mark a notification as read"
+					},
+					"response": []
+				},
+				{
+					"name": "Mark All Notifications as Read",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/mark_all_read/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "mark_all_read", ""]
+						},
+						"description": "Mark all notifications as read"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Count",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/unread_count/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "unread_count", ""]
+						},
+						"description": "Get count of unread notifications"
+					},
+					"response": []
+				},
+				{
+					"name": "Clear All Read Notifications",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/clear_all/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "clear_all", ""]
+						},
+						"description": "Delete all read notifications"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
